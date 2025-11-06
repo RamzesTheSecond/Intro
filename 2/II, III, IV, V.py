@@ -1,7 +1,8 @@
 from datetime import datetime
 from sqlalchemy import create_engine, String, Integer, DateTime, Boolean, Float, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
+# II
 class Base(DeclarativeBase):
     pass
 
@@ -25,5 +26,12 @@ class DataPoint(Base):
 engine = create_engine("sqlite:///experiments.db")
 Base.metadata.create_all(engine)
 
+# III
+engine = create_engine("sqlite:///experiments.db")
 
+with Session(engine) as session:
+    exp1 = Experiment(title="Test1", type=1)
+    exp2 = Experiment(title="Test2", type=2)
 
+    session.add_all([exp1, exp2])
+    session.commit()
