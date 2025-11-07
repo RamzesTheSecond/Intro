@@ -29,6 +29,7 @@ class DataPoint(Base):
     #experiment_id: Mapped[int] = mapped_column(ForeignKey("experiment.id"), nullable=False)
     #experiment: Mapped["Experiment"] = relationship(back_populates="data_points")
 
+
 engine = create_engine("sqlite:///experiments.db")
 Base.metadata.create_all(engine)
 
@@ -77,5 +78,5 @@ session.commit()
 
 #IV - zakomentowany kod
 
-#V
+#V.py
 
