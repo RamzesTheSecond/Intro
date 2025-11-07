@@ -76,3 +76,6 @@ session.execute(delete(Experiment))
 session.commit()
 
 #IV - zakomentowany kod
+
+#V
+
