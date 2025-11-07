@@ -65,6 +65,8 @@ result = session.execute(
 session.commit()
 
 # III.5
-del_dp = session.execute(delete(DataPoint))
-del_exp = session.execute(delete(Experiment))
+session.execute(delete(DataPoint))
+session.execute(delete(Experiment))
 session.commit()
+
+#IV
