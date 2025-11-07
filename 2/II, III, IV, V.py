@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import create_engine, String, Integer, DateTime, Boolean, Float, func
+from sqlalchemy import create_engine, String, Integer, DateTime, Boolean, Float, func, select, update, delete
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+import random
 
 # II
 class Base(DeclarativeBase):
@@ -26,12 +27,44 @@ class DataPoint(Base):
 engine = create_engine("sqlite:///experiments.db")
 Base.metadata.create_all(engine)
 
-# III
+# III.1,2
 engine = create_engine("sqlite:///experiments.db")
 
 with Session(engine) as session:
     exp1 = Experiment(title="Test1", type=1)
     exp2 = Experiment(title="Test2", type=2)
 
-    session.add_all([exp1, exp2])
-    session.commit()
+    data_points = [
+        DataPoint(
+            real_value=round(random.uniform(0.0, 100.0), 2),
+            target_value=round(random.uniform(0.0, 100.0), 2)
+        )
+        for _ in range(10)
+    ]
+
+session.add_all([exp1, exp2])
+session.add_all(data_points)
+session.commit()
+
+# III.3
+with Session(engine) as session:
+    print("=== Zawartość tabeli Experiment ===")
+    experiments = session.scalars(select(Experiment)).all()
+    for exp in experiments:
+        print(f"id={exp.id}, title='{exp.title}', type={exp.type}, finished={exp.finished}, created_at={exp.created_at}")
+
+    print("\n=== Zawartość tabeli DataPoint ===")
+    data_points = session.scalars(select(DataPoint)).all()
+    for dp in data_points:
+        print(f"id={dp.id}, real_value={dp.real_value}, target_value={dp.target_value}")
+
+# III.4
+result = session.execute(
+    update(Experiment).values(finished=True)
+)
+session.commit()
+
+# III.5
+del_dp = session.execute(delete(DataPoint))
+del_exp = session.execute(delete(Experiment))
+session.commit()
