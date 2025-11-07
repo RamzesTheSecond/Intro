@@ -1,6 +1,6 @@
 from datetime import datetime
-from sqlalchemy import create_engine, String, Integer, DateTime, Boolean, Float, func, select, update, delete
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+from sqlalchemy import create_engine, String, Integer, DateTime, Boolean, Float, func, select, update, delete, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 import random
 
 # II
@@ -15,6 +15,10 @@ class Experiment(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     type: Mapped[int] = mapped_column(Integer, nullable=False)
     finished: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="0")
+    #data_points: Mapped[list["DataPoint"]] = relationship(
+    #    back_populates="experiment",
+    #    cascade="all, delete-orphan"
+    #)
 
 class DataPoint(Base):
     __tablename__ = "data_point"
@@ -22,7 +26,8 @@ class DataPoint(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     real_value: Mapped[float] = mapped_column(Float, nullable=False)
     target_value: Mapped[float] = mapped_column(Float, nullable=False)
-
+    #experiment_id: Mapped[int] = mapped_column(ForeignKey("experiment.id"), nullable=False)
+    #experiment: Mapped["Experiment"] = relationship(back_populates="data_points")
 
 engine = create_engine("sqlite:///experiments.db")
 Base.metadata.create_all(engine)
@@ -37,7 +42,8 @@ with Session(engine) as session:
     data_points = [
         DataPoint(
             real_value=round(random.uniform(0.0, 100.0), 2),
-            target_value=round(random.uniform(0.0, 100.0), 2)
+            target_value=round(random.uniform(0.0, 100.0), 2),
+            #experiment=exp1,
         )
         for _ in range(10)
     ]
@@ -69,4 +75,4 @@ session.execute(delete(DataPoint))
 session.execute(delete(Experiment))
 session.commit()
 
-#IV
+#IV - zakomentowany kod
